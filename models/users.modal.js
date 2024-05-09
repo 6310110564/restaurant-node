@@ -8,8 +8,10 @@ const userShema = new mongoose.Schema({
     last_name: { type: String },
     email: { type: String },
     token: {type: String },
-    role: { type: String, default: "customer"},
+    role: { type: String, default: "custumer"},
     approve: { type: Boolean, default: false},
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('users', userShema);

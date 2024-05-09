@@ -217,4 +217,7 @@ router.post('/:id/orders',auth , async function (req, res, next) {
     }
 });
 
+/* DELETE Order */
+
+
 module.exports = router;

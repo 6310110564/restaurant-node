@@ -62,8 +62,8 @@ router.post("/login", async function (req, res, next) {
         data: { _id, first_name, last_name, email, token } 
       })
     } else {
-      return res.status(403).send({
-        status: "403",
+      return res.status(401).send({
+        status: "401",
         message: "Waiting to approve"
       })
     }

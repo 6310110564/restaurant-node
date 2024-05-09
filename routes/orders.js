@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 
 /* GET Order */
-router.get('/', async function(req, res, next) {
+router.get('/', auth, async function(req, res, next) {
     try {
 
         let orders = await orderModel.find();
