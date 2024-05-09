@@ -8,7 +8,7 @@ const userShema = new mongoose.Schema({
     last_name: { type: String },
     email: { type: String },
     token: {type: String },
-    role: { type: String },
+    role: { type: String, default: "customer"},
     approve: { type: Boolean, default: false},
 });
 
