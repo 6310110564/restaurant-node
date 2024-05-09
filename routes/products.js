@@ -27,7 +27,7 @@ router.get("/",auth , async function (req, res, next) {
 })
 
 /* GET Product By ID */
-router.get("/:id", async function (req, res, next) {
+router.get("/:id", auth,  async function (req, res, next) {
     try {
         let id = req.params.id;
         let product = await productModel.findById(id)
@@ -46,7 +46,7 @@ router.get("/:id", async function (req, res, next) {
 })
 
 /* POST Product */
-router.post('/', async function (req, res, next) {
+router.post('/', auth, async function (req, res, next) {
     try {
 
         const { product_name, price, stock } = req.body;
@@ -74,7 +74,7 @@ router.post('/', async function (req, res, next) {
 });
 
 /* DELETE Product By ID */
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", auth, async function (req, res, next) {
     try {
         
         let id = req.params.id;
@@ -95,7 +95,7 @@ router.delete("/:id", async function (req, res, next) {
 
 
 /* GET Order in Product */
-router.get("/:id/orders", async function( req, res, next) {
+router.get("/:id/orders", auth, async function( req, res, next) {
     try {
         
         let id = req.params.id;
@@ -154,22 +154,22 @@ router.post('/:id/orders',auth , async function (req, res, next) {
         //ถ้ามี stock เหลือมากกว่า 0
         if ( stock_remaining > 0 ) {
 
-            const custumer = await usersModal.findById(auth_id);
+            const customer = await usersModal.findById(auth_id);
 
-            if (!custumer) {
+            if (!customer) {
                 return res.status(404).send({
                     status: "404",
-                    message: "custumer not found"
+                    message: "customer not found"
                 });
             }
 
             let newOrder = new orderModel({
                 product_id: product_id,
                 amount: amount,
-                custumer: {
-                    _id: custumer._id,
-                    first_name: custumer.first_name,
-                    last_name: custumer.last_name
+                customer: {
+                    _id: customer._id,
+                    first_name: customer.first_name,
+                    last_name: customer.last_name
                 }
             });
 
@@ -183,7 +183,7 @@ router.post('/:id/orders',auth , async function (req, res, next) {
                 const formattedOrder = {
                     product_id: order.product_id,
                     amount: order.amount,
-                    custumer: order.custumer,
+                    customer: order.customer,
                 };
 
                 product.orders.push(formattedOrder);
@@ -198,7 +198,7 @@ router.post('/:id/orders',auth , async function (req, res, next) {
             } else {
                 res.status(500).send({
                     status: "500",
-                    message: "Not enough stock"
+                    message: `Not enough stock. stock remaining ${stock_remaining}`
                 });
             }
 

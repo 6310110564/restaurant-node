@@ -87,10 +87,9 @@ router.post('/register', async function (req, res, next) {
 router.put('/:id', auth, async function(req, res, next) {
   try {
 
-    const username = req.user.username;
-    console.log('name: ', username);
+    const role = req.user.role;
 
-    if(username === 'admin') {
+    if(role === 'admin') {
       let { approve } = req.body;
 
       let update = await usersModel.findByIdAndUpdate(req.params.id, { approve }, { new: true })

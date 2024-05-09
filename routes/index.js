@@ -38,7 +38,8 @@ router.post("/login", async function (req, res, next) {
       { 
         id: user._id,
         username, 
-        password 
+        password,
+        role: user.role
       },
       process.env.TOKEN_KEY,
       {
