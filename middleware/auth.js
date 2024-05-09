@@ -13,13 +13,23 @@ const verifyToken = (req, res, next ) => {
         const decoded = jwt.verify(token, config.TOKEN_KEY);
         req.user = decoded;
 
-        console.log(decoded)
+        approve = decoded.approve;
+
+        // if ( approve == true ) {
+        //     return next();
+        // } else {
+        //     return res.status(403).send({
+        //         status: "403",
+        //         message: "Waiting to approve"
+        //     })
+        // }
+
+        return next();
 
     } catch {
         return res.status(401).send("Invalid Token");
     }
 
-    return next();
 }
 
 module.exports = verifyToken;

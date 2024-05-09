@@ -11,10 +11,10 @@ const auth = require('../middleware/auth');
 router.get('/', auth, async function(req, res, next) {
   try {
 
-    const username = req.user.username;
-    console.log('name: ', username);
+    const role = req.user.role;
+    console.log('name: ', role);
 
-    if(username === 'admin') {
+    if(role === 'admin') {
       const users = await usersModel.find();
 
       return res.status(200).send({
@@ -100,8 +100,8 @@ router.put('/:id', auth, async function(req, res, next) {
         data: update
       })
     } else {
-      return res.status(403).send({
-        status: "403",
+      return res.status(401).send({
+        status: "401",
         message: "Access Denied"
       });
     }

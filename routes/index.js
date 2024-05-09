@@ -23,7 +23,7 @@ router.post("/login", async function (req, res, next) {
       });
     }
 
-    // console.log('user: ', user);
+    console.log('user: ', user);
 
     const checkpassword = await bcrypt.compare(password, user.password);
     if(!checkpassword) {
@@ -33,13 +33,16 @@ router.post("/login", async function (req, res, next) {
       });
     }
 
+    console.log('user approve: ', user.approve);
+
     //create token
     const token = jwt.sign(
       { 
         id: user._id,
         username, 
         password,
-        role: user.role
+        role: user.role,
+        // approve: user.approve
       },
       process.env.TOKEN_KEY,
       {
@@ -59,8 +62,8 @@ router.post("/login", async function (req, res, next) {
         data: { _id, first_name, last_name, email, token } 
       })
     } else {
-      return res.status(500).send({
-        status: "500",
+      return res.status(403).send({
+        status: "403",
         message: "Waiting to approve"
       })
     }
