@@ -135,7 +135,7 @@ router.post('/:id/orders',auth , async function (req, res, next) {
             })
         }
 
-        total_amount = 0;
+        let total_amount = 0;
 
         for (let i = 0; i < product.orders.length; i++) {
             //เข้าถึง order ที่อยู่ภายในทุกตัว
