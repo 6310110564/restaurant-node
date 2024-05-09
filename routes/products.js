@@ -73,6 +73,28 @@ router.post('/', auth, async function (req, res, next) {
     }
 });
 
+/* PUT Product */
+router.put('/:id', async function(req, res, next) {
+    try {
+        
+        let id = req.params.id
+        let { price, stock } = req.body;
+
+        let update = await productModel.findByIdAndUpdate(id, { price, stock }, { new: true })
+
+        return res.status(200).send({
+            status: "200",
+            message: update
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            status: "500",
+            message: (error.toString())
+        });
+    }
+})
+
 /* DELETE Product By ID */
 router.delete("/:id", auth, async function (req, res, next) {
     try {
