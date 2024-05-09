@@ -217,26 +217,6 @@ router.post('/:id/orders',auth , async function (req, res, next) {
     }
 });
 
-/* POST Order */
-router.post('/:id/orders',auth , async function (req, res, next) {
-    try {
-
-        const { amount } = req.body;
-
-        const product_id = req.params.id;
-        const product = await productModel.findById(product_id);
-
-        const auth_id = req.user.id;
-        
-
-    } catch (error) {
-        res.status(500).send({
-            status: "500",
-            message: (error.toString())
-        });
-    }
-});
-
 /* DELETE Order */
 
 
