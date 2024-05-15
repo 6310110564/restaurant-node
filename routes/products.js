@@ -5,10 +5,26 @@ const productModel = require("../models/product.modal");
 const usersModal = require("../models/users.modal");
 const orderModel = require("../models/order.modal");
 const mongoose = require('mongoose');
-const auth = require("../middleware/auth")
+const auth = require("../middleware/auth");
+const cartModal = require('../models/cart.modal');
+// var multer = require('multer');
+
+//--------------upload file----------------------
+// const storage = multer.diskStorage({
+//     //file ที่จะเอารูปไปเก็บไว้
+//     destination: function (req, file, cb) {
+//       cb(null, 'public/images')
+//     },
+//     filename: function (req, file, cb) {
+//       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+//       cb(null, uniqueSuffix + '_' + file.originalname)
+//     }
+//   })
+  
+//   const upload = multer({ storage: storage })
 
 /* GET All Product */
-router.get("/",auth , async function (req, res, next) {
+router.get("/", async function (req, res, next) {
     try {
         
         let product = await productModel.find();
@@ -27,7 +43,7 @@ router.get("/",auth , async function (req, res, next) {
 })
 
 /* GET Product By ID */
-router.get("/:id", auth,  async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
     try {
         let id = req.params.id;
         let product = await productModel.findById(id)
@@ -46,18 +62,22 @@ router.get("/:id", auth,  async function (req, res, next) {
 })
 
 /* POST Product */
-router.post('/', auth, async function (req, res, next) {
+router.post('/', async function (req, res, next) {
     try {
 
-        const { product_name, price, stock } = req.body;
+        const { product_name, product_img, price, stock } = req.body;
 
         let newProduct = new productModel({
             product_name: product_name,
+            // product_img: req.file.filename,
+            product_img: product_img,
             price: price,
             stock: stock
         });
 
         let product = await newProduct.save();
+        console.log('new: ', newProduct)
+        console.log(product);
 
         return res.status(201).send({
             status: "201",
@@ -96,7 +116,7 @@ router.put('/:id', async function(req, res, next) {
 })
 
 /* DELETE Product By ID */
-router.delete("/:id", auth, async function (req, res, next) {
+router.delete("/:id", async function (req, res, next) {
     try {
         
         let id = req.params.id;
@@ -117,7 +137,7 @@ router.delete("/:id", auth, async function (req, res, next) {
 
 
 /* GET Order in Product */
-router.get("/:id/orders", auth, async function( req, res, next) {
+router.get("/:id/orders", async function( req, res, next) {
     try {
         
         let id = req.params.id;
@@ -139,16 +159,16 @@ router.get("/:id/orders", auth, async function( req, res, next) {
 })
 
 /* POST Order */
-router.post('/:id/orders',auth , async function (req, res, next) {
+router.post('/:id/orders', async function (req, res, next) {
     try {
 
-        const { amount } = req.body;
+        const { amount, user_id } = req.body;
 
         const product_id = req.params.id;
         const product = await productModel.findById(product_id);
 
-        const auth_id = req.user.id;
-        console.log('auth id: ', auth_id);
+        // const auth_id = req.user.id;
+        // console.log('auth id: ', auth_id);
 
         if (!product) {
             return res.status(400).send({
@@ -176,7 +196,8 @@ router.post('/:id/orders',auth , async function (req, res, next) {
         //ถ้ามี stock เหลือมากกว่า 0
         if ( stock_remaining > 0 ) {
 
-            const customer = await usersModal.findById(auth_id);
+            const customer = await usersModal.findById(user_id);
+            console.log(customer);
 
             if (!customer) {
                 return res.status(404).send({
@@ -203,6 +224,7 @@ router.post('/:id/orders',auth , async function (req, res, next) {
                 console.log('orders: ', order);
 
                 const formattedOrder = {
+                    order_id: order._id,
                     product_id: order.product_id,
                     amount: order.amount,
                     customer: order.customer,
@@ -239,7 +261,67 @@ router.post('/:id/orders',auth , async function (req, res, next) {
     }
 });
 
-/* DELETE Order */
 
+/* GET CARTS */
+router.get('/:id/carts', async(req, res, next ) => {
+    try {
+        const product_id = req.params.id;
+
+        const orders = await productModel
+            .find({ product_id: product_id})
+            .populate("product_id", "product_name")
+            .populate("userId", "FirstName");
+
+        return res.status(200).send({
+            status: "200",
+            message: "success",
+            data: orders
+        })
+    } catch (error) {
+        res.status(500).send({
+            status: "500",
+            message: (error.toString())
+        });
+    }
+})
+
+// /*  POST Order */
+router.post("/:id/carts", async (req, res, next) => {
+    try {
+        const product_id = req.params.id;
+        const { amount, user_id } = req.body;
+
+        const product = await productModel.findById(product_id);
+
+        if(amount > product.stock) {
+            return res.status(400).send({
+                status: "400",
+                message: "ไม่สามารถเพิ่ม order ได้ เนื่องจากจำนวน stock ไม่เพียงพอ"
+            })
+        }
+
+        product.stock -= amount;
+        await product.save();
+
+        const newOrder = new cartModal({
+            product_id: product_id,
+            amount: amount,
+            user_id: user_id,
+        })
+
+        const order = await newOrder.save()
+        return res.status(200).send({
+            status: "200",
+            message: "create success",
+            data: order
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            status: "500",
+            message: (error.toString())
+        });
+    }
+})
 
 module.exports = router;

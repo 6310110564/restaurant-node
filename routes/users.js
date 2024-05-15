@@ -8,13 +8,13 @@ const jwt = require('jsonwebtoken');
 
 const auth = require('../middleware/auth');
 
-router.get('/', auth, async function(req, res, next) {
+router.get('/', async function(req, res, next) {
   try {
 
-    const role = req.user.role;
-    console.log('name: ', role);
+    // const role = req.user.role;
+    // console.log('name: ', role);
 
-    if(role === 'admin') {
+    // if(role === 'admin') {
       const users = await usersModel.find();
 
       return res.status(200).send({
@@ -23,12 +23,12 @@ router.get('/', auth, async function(req, res, next) {
         data: users
       });  
 
-    } else {
-      return res.status(403).send({
-        status: "403",
-        message: "Access Denied"
-      });
-    }
+    // } else {
+    //   return res.status(403).send({
+    //     status: "403",
+    //     message: "Access Denied"
+    //   });
+    // }
 
   } catch (error) {
     res.status(500).send({
