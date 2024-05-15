@@ -41,6 +41,31 @@ router.get("/", async function (req, res, next) {
         })
     }
 })
+// router.get("/", async function (req, res, next) {
+//     try {
+//         let products = await productModel.find().populate({
+//             path: 'cart_id',
+//             populate: {
+//                 path: 'products',
+//                 match: { _id: req.params.productId }
+//             }
+//         });
+
+//         // Filter out products that do not have matching carts
+//         let productsWithMatchingCarts = products.filter(product => product.cart_id.length > 0);
+
+//         return res.status(200).send({
+//             status: "200",
+//             message: "success",
+//             data: productsWithMatchingCarts,
+//         });
+//     } catch (error) {
+//         return res.status(500).send({
+//             status: "500",
+//             message: (error.toString())
+//         });
+//     }
+// });
 
 /* GET Product By ID */
 router.get("/:id", async function (req, res, next) {
@@ -300,7 +325,7 @@ router.post("/:id/carts", async (req, res, next) => {
             })
         }
 
-        product.stock -= amount;
+        // product.stock -= amount;
         await product.save();
 
         const newOrder = new cartModal({

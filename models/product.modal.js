@@ -6,7 +6,8 @@ const productShema = new mongoose.Schema({
     price: { type: Number },
     stock: { type: Number },
     // orders : [{ type: Object, ref: 'orders' }]
-    orders : [{ type: Object }]
+    orders : [{ type: Object }],
+    cart_id : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }]
 }, {
     timestamps: true
 });
